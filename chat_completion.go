@@ -340,6 +340,7 @@ type ChatCompletionService struct {
 	userID      *string
 	meta        *ChatCompletionMeta
 	resFormat   *string
+	thinking    *string
 
 	messages []any
 	tools    []any
@@ -347,9 +348,7 @@ type ChatCompletionService struct {
 	streamHandler ChatCompletionStreamHandler
 }
 
-var (
-	_ BatchSupport = &ChatCompletionService{}
-)
+var _ BatchSupport = &ChatCompletionService{}
 
 // NewChatCompletionService creates a new ChatCompletionService.
 func NewChatCompletionService(client *Client) *ChatCompletionService {
@@ -432,6 +431,11 @@ func (s *ChatCompletionService) SetUserID(userID string) *ChatCompletionService 
 
 func (s *ChatCompletionService) SetResponseFormat(format string) *ChatCompletionService {
 	s.resFormat = &format
+	return s
+}
+
+func (s *ChatCompletionService) SetThinking(thinking string) *ChatCompletionService {
+	s.thinking = &thinking
 	return s
 }
 
@@ -526,6 +530,9 @@ func (s *ChatCompletionService) buildBody() M {
 	}
 	if s.resFormat != nil {
 		body["response_format"] = M{"type": *s.resFormat}
+	}
+	if s.thinking != nil {
+		body["thinking"] = M{"type": *s.thinking}
 	}
 	return body
 }
